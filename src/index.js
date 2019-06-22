@@ -1,32 +1,30 @@
 import Phaser from "phaser";
-import logoImg from "./assets/logo.png";
+import MapGen from './map_gen.js';
 
 const config = {
   type: Phaser.AUTO,
   parent: "phaser-example",
-  width: 800,
-  height: 600,
+  width: 1200,
+  height: 800,
   scene: {
     preload: preload,
-    create: create
+    create: create,
+    update: update
   }
 };
 
 const game = new Phaser.Game(config);
 
+const mapConfig = { height: 80, width: 120, useRandomSeed: false, smooth: 10, seed: "HELLO", wallThreshold: 200 };
+var mapGenerator = new MapGen(mapConfig);
+
 function preload() {
-  this.load.image("logo", logoImg);
 }
 
 function create() {
-  const logo = this.add.image(400, 150, "logo");
-
-  this.tweens.add({
-    targets: logo,
-    y: 450,
-    duration: 2000,
-    ease: "Power2",
-    yoyo: true,
-    loop: -1
-  });
+  mapGenerator.debugDraw(this);
+  console.log(mapGenerator.rooms);
 }
+
+function update() {
+};
