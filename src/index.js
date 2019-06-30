@@ -9,8 +9,8 @@ import MapDraw from './map_draw.js';
 const config = {
   type: Phaser.AUTO,
   parent: "phaser-example",
-  width: 1600,
-  height: 1600,
+  width: 3200,
+  height: 3200,
   scene: {
     preload: preload,
     create: create,
@@ -28,9 +28,9 @@ const config = {
 const game = new Phaser.Game(config);
 
 const mapConfig = {
-  height: 50,
-  width: 50,
-  useRandomSeed: false,
+  height: 100,
+  width: 100,
+  useRandomSeed: true,
   smooth: 10,
   seed: "HELLO",
   wallThreshold: 200

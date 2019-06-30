@@ -12,6 +12,8 @@ const DEFAULTCONFIG = {
   seed: Date.now().toString()
 };
 
+const allowedTiles = [0,11,15,22,23,31,47,63,104,105,107,111,127,150,151,159,208,212,214,215,223,232,233,235,240,244,246,248,249,251,252,254,255]; // allowed wall tile
+
 
 class Room {
 
@@ -95,7 +97,28 @@ class MapGen {
 
     this.processMap();
 
-    this.setupBorderWalls();
+    let hasHoles = true;
+    while(hasHoles) {
+      this.setupBorderWalls();
+
+      // check if there are tiles that we dont want to draw,
+      // for example, wall tiles that are next to each other diagonally
+      hasHoles = this.removeHoles(width,height,this.walls) > 0;
+    }
+
+  }
+
+  removeHoles(width, height, walls) {
+    let sum = 0;
+    for (var i = 0; i < width; i++) {
+      for (var j = 0; j < height; j++) {
+        if(allowedTiles.indexOf(walls[i][j]) < 0) {
+          this.drawCircle({ x: i, y: j },2);
+          sum += 1;
+        }
+      }
+    }
+    return sum;
   }
 
   smoothMap() {
@@ -127,43 +150,6 @@ class MapGen {
         }
       }
     }
-
-    function onlyUnique(value, index, self) {
-      return self.indexOf(value) === index;
-    }
-
-    let unique = vals.filter(onlyUnique).sort((a,b) => a-b);
-
-    console.log(unique);
-
-    // let a = [];
-    // let specialNums = [208,220,216,144,217,215,81,97,189,193,145,205];
-    // let specialCorners = [];
-
-    // for (let i = 0; i < width; i++) {
-    //   for (let j = 0; j < height; j++) {
-    //     let wallTile = walls[i][j];
-    //     if(wallTile === 15) {
-    //       let tileNum = this.getSurroundingWalls(walls,i,j);
-
-    //       if(specialNums.indexOf(tileNum) > -1) {
-    //         specialCorners.push({ x: i, y: j, tileNum });
-    //       }
-    //       else {
-    //         a.push(tileNum);
-    //       }
-    //     }
-    //   }
-    // }
-
-    // for (var k = 0; k < specialCorners.length; k++) {
-    //   let corner = specialCorners[k];
-    //   walls[corner.x][corner.y] = corner.tileNum;
-    // }
-
-    // let unique = a.filter(onlyUnique).sort((a,b) => a-b);
-
-    // console.log(unique);
   }
 
   getSurroundingWalls(map,x,y) {
@@ -180,18 +166,6 @@ class MapGen {
         if(i<0 || j < 0 || i >= width || j >= height)  {
           obj = 1;
         }
-        // else if(i !==x && j !== y) {
-        //   let signX = i-x;
-        //   let signY = j-y;
-        //   let xPos = i-signX;
-        //   let yPos = j-signY;
-        //   if(xPos < 0 || xPos >= width || yPos < 0 || yPos >= height) {
-        //     obj = 0;
-        //   }
-        //   else if(map[xPos][j] === 1 && map[i][yPos] === 1){
-        //     obj = 1;
-        //   }
-        // }
         else {
           obj = map[i][j];
         }
@@ -201,14 +175,6 @@ class MapGen {
     }
 
     return ans;
-
-    // let up = y - 1 < 0 ? 1 : map[x][y-1];
-    // let up_right = y - 1 < 0 && x + 1 >= width ? 2 : map[x+1][y-1] * 2;
-    // let right = x + 1 >= width ? 2 : map[x+1][y] * 2;
-    // let down = y + 1 >= height ? 4 : map[x][y+1] * 4;
-    // let left = x - 1 < 0 ? 8 : map[x-1][y] * 8;
-
-    // return up + right + down + left;
   }
 
   getSurroundingWallCount(x,y) {
@@ -338,14 +304,18 @@ class MapGen {
   }
 
   drawCircle(tile, radius) {
+    const { height, width } = this.config;
     const r2 = radius*radius;
     for (var x = -radius; x <= radius; x++) {
       for (var y = -radius; y <= radius; y++) {
         if(x*x + y*y < r2) {
           let drawX = tile.x + x;
           let drawY = tile.y + y;
-          if(this.isInRange(drawX, drawY)) {
+          if(drawX > 0 && drawX <  width - 1 && drawY > 0 && drawY < height - 1) {
             this.map[drawX][drawY] = 0;
+          }
+          else {
+            this.map[drawX][drawY] = 1;
           }
         }
       }

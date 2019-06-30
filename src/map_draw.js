@@ -22,15 +22,19 @@ const Image_Dic = {
 //6+
 const tileDic = {
   127: Image_Dic.CORNER_TOP_LEFT_SPECIAL, //
+  208: Image_Dic.CORNER_TOP_LEFT, //
   223: Image_Dic.CORNER_TOP_RIGHT_SPECIAL, //
   105: Image_Dic.CORNER_TOP_RIGHT, //
   232: Image_Dic.CORNER_TOP_RIGHT, //
   233: Image_Dic.CORNER_TOP_RIGHT, //
+  104: Image_Dic.CORNER_TOP_RIGHT, //
   244: Image_Dic.CORNER_TOP_LEFT, //
   240: Image_Dic.CORNER_TOP_LEFT, //
   212: Image_Dic.CORNER_TOP_LEFT, //
   254: Image_Dic.CORNER_BOTTOM_RIGHT_SPECIAL, //
+  11: Image_Dic.CORNER_BOTTOM_RIGHT, //
   251: Image_Dic.CORNER_BOTTOM_LEFT_SPECIAL, //
+  22: Image_Dic.CORNER_BOTTOM_LEFT, //
   63: Image_Dic.TOP, //
   159: Image_Dic.TOP, //
   150: Image_Dic.TOP, //
@@ -69,7 +73,7 @@ const drawMap = (scene,config, data, walls) => {
       let wallTile = walls[x][y];
       if(wallTile > 0) {
         let ar = tileDic[wallTile];
-        let tileSp = ar[Math.floor(Math.random()*ar.length)];
+        let tileSp = !!ar ? ar[Math.floor(Math.random()*ar.length)] : ar;
         wallLayer.putTileAt(tileSp,x,y);
       }
     }
